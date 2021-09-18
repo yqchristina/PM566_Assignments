@@ -1,0 +1,80 @@
+---
+title: "Assignment 1"
+author: "Christina Lin"
+date: "9/17/2021"
+output: github_document
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1. Retrieving data and checking for missing values
+
+Reading 2004 and 2019 Data
+```{r}
+library(data.table)
+library(tidyverse)
+
+if (!file.exists("2004_data"))
+  download.file(
+    url = "https://www3.epa.gov/cgi-bin/broker?_service=data&_server=134.67.99.91&_port=4081&_sessionid=3c/E52I/R52&_PROGRAM=dataprog.ad_viz_plotval_getdata.sas",
+    destfile = "2004_data",
+    method   = "libcurl",
+    timeout  = 60
+    )
+pm2004 <- data.table::fread("2004_data")
+
+
+if (!file.exists("2019_data"))
+  download.file(
+    url = "https://www3.epa.gov/cgi-bin/broker?_service=data&_server=134.67.99.91&_port=4077&_sessionid=R7C4z2I/R52&_PROGRAM=dataprog.ad_viz_plotval_getdata.sas",
+    destfile = "2019_data",
+    method   = "libcurl",
+    timeout  = 60
+    )
+pm2019 <- data.table::fread("2019_data")
+
+```
+
+Checking dimensions, headers, footers, variables names and variable types
+
+```{r}
+# For 2004 Dataset
+dim(pm2004)
+head(pm2004)
+tail(pm2004)
+str(pm2004)
+
+
+# For 2019 Dataset
+dim(pm2019)
+head(pm2019)
+tail(pm2019)
+str(pm2019)
+
+```
+
+Checking for issues in key variables
+```{r}
+summary(pm2004$`Daily Mean PM2.5 Concentration`)
+summary(pm2004$SITE_LATITUDE)
+summary(pm2004$SITE_LONGITUDE)
+mean(is.na(pm2004$`Daily Mean PM2.5 Concentration`))
+mean(is.na(pm2004$SITE_LATITUDE))
+mean(is.na(pm2004$SITE_LONGITUDE))
+
+
+summary(pm2019$`Daily Mean PM2.5 Concentration`)
+summary(pm2019$SITE_LATITUDE)
+summary(pm2019$SITE_LONGITUDE)
+mean(is.na(pm2019$`Daily Mean PM2.5 Concentration`))
+mean(is.na(pm2019$SITE_LATITUDE))
+mean(is.na(pm2019$SITE_LONGITUDE))
+
+```
+
+
+
+In 2004, there were 19233 observations total. In 2019, there were 53086 observations total. There are no missing values (i.e. "NA"s) for daily mean 2.5 concentration, latitude, and longitude for both the 2004 and 2019 datasets. Upon examining the minimum and maximum values for these variables, there does not appear to be any "9999" in place of missing values either. Thus, the datasets looks ready for analysis. 
