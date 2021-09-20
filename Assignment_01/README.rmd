@@ -120,7 +120,8 @@ leaflet(pm) %>%
 ```
 
 
-Observations: The sites in 2004 were mainly at the north and south ends of California while in 2019, the sites are more evently scattered around the state. 
+Observations: The sites in 2004 were mainly at the north and south ends of California while in 2019, the sites are more evenly scattered around the state. 
+
 
 
 #Step 4: Check for any missing or implausible values of PM in the combined dataset
@@ -131,7 +132,74 @@ summary(pm)
 
 Observations: There are PM2.5 values that are negative, which does not seem plausible since these values represent a concentration. 
 
+
 ```{r}
-(dPM < 0)
+#Filtering out the data points that have negative PM2.5 values
+pm2 <- pm[dPM < 0]
+summary(pm2)
+
+pal2 <- colorFactor(palette=c('red','blue'), domain=pm2$year)
+
+leaflet(pm2) %>%
+  addProviderTiles('CartoDB.Positron') %>%
+  addCircles(
+    lat = ~lat, lng=~lon,
+    color = ~pal2(year),
+    opacity = 1, fillOpacity = 1, radius = 500
+    ) %>%
+  addLegend('bottomleft', pal=pal2, values=pm2$year,
+          title='Year', opacity=1)
+
+```
+
+
+Observations: There is 1 negative PM2.5 value recorded in 2004 and 282 of such values in 2019. By mapping these data points, it appears that the negative value recorded in 2004 is located in the middle of the state. The negative values recorded in 2019 are rather evenly spread out throughout the state. 
+
+
+#Step 5: Explore the main question of interest at three different spatial levels
+
+Comparing PM2.5 levels between 2004 and 2019 at the state level
+
+```{r}
+ggplot(data = pm, mapping = aes(x = year, y = dPM)) +
+  geom_boxplot()
+
+ggplot(data = pm, mapping = aes(x = dPM)) +
+  geom_histogram(bins=20) +
+  facet_grid(~year)
+
+summary(pm[year==2004 & dPM >= 0,dPM])
+summary(pm[year==2019 & dPM >=0 ,dPM])
+```
+
+
+Observations: The average and media PM2.5 levels appear lower in 2019 than 2004 and the maximum PM2.5 level measured is lower in 2019. This is the case when negative values are include but also when negative values are excluded from the statistics summary. 
+
+
+
+Comparing PM2.5 levels between 2004 and 2019 at the county level
+
+```{r}
+#Averaging daily PM2.5 values, grouped by year and county code 
+pm_county_avg <- group_by(pm, year, COUNTY_CODE) %>%
+  summarize(dPM = mean(dPM))
+
+head(pm_county_avg)
+tail(pm_county_avg)
+
+#Making line graph to show change in PM2.5 values in counties between the two years
+ggplot(data = pm_county_avg, mapping = aes(x = year,y = dPM, color = as.factor(COUNTY_CODE))) +
+  geom_point() +
+  geom_line(aes(group= as.factor(COUNTY_CODE)))
+```
+
+
+Observations: 
+
+
+Comparing PM2.5 levels between 2004 and 2019 at the site level
+
+```{r}
+
 ```
 
