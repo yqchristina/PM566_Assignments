@@ -91,8 +91,9 @@ pm <- rbind(pm2004, pm2019)
 pm <- mutate(pm, year = factor(rep(c(2004, 2019), c(nrow(pm2004), nrow(pm2019))))) %>%
   rename(dPM ="Daily Mean PM2.5 Concentration") %>%
   rename(lat = SITE_LATITUDE) %>%
-  rename(lon = SITE_LONGITUDE)
-
+  rename(lon = SITE_LONGITUDE) %>%
+  rename(site = "Site ID") %>%
+  rename(site_name = "Site Name")
 str(pm)
 
 ```
@@ -130,6 +131,7 @@ Observations: The sites in 2004 were mainly at the north and south ends of Calif
 summary(pm)
 ```
 
+
 Observations: There are PM2.5 values that are negative, which does not seem plausible since these values represent a concentration. 
 
 
@@ -156,6 +158,7 @@ leaflet(pm2) %>%
 Observations: There is 1 negative PM2.5 value recorded in 2004 and 282 of such values in 2019. By mapping these data points, it appears that the negative value recorded in 2004 is located in the middle of the state. The negative values recorded in 2019 are rather evenly spread out throughout the state. 
 
 
+
 #Step 5: Explore the main question of interest at three different spatial levels
 
 Comparing PM2.5 levels between 2004 and 2019 at the state level
@@ -173,7 +176,7 @@ summary(pm[year==2019 & dPM >=0 ,dPM])
 ```
 
 
-Observations: The average and media PM2.5 levels appear lower in 2019 than 2004 and the maximum PM2.5 level measured is lower in 2019. This is the case when negative values are include but also when negative values are excluded from the statistics summary. 
+Observations: The average and media PM2.5 levels appear lower in 2019 than 2004 and the maximum PM2.5 level measured is lower in 2019. This is the case when negative values are included but also when negative values are excluded from the statistics summary. 
 
 
 
@@ -194,12 +197,27 @@ ggplot(data = pm_county_avg, mapping = aes(x = year,y = dPM, color = as.factor(C
 ```
 
 
-Observations: 
+Observations: In most counties, the average PM2.5 values have decreased from 2004 to 2019. There are a few counties that saw increased average PM2.5 values, but these increases are not very big. 
 
 
-Comparing PM2.5 levels between 2004 and 2019 at the site level
+
+Comparing PM2.5 levels between 2004 and 2019 at Los Angeles site
 
 ```{r}
+pm_la <- filter(pm, site_name == "Los Angeles-North Main Street")
+
+ggplot(data = pm_la, mapping = aes(x = year, y = dPM)) +
+  geom_boxplot()
+
+ggplot(data = pm_la, mapping = aes(x = dPM)) +
+  geom_histogram(bins=20) +
+  facet_grid(~year)
 
 ```
 
+
+Observations: At the site in LA, the average PM2.5 values are lower in 2019 compared to 2004. The histogram also shows that there are more observations at lower PM2.5 values in 2019 compared to 2004. 
+
+
+
+Conclusion: Daily PM 2.5 values in California appear to have decreased from 2004 to 2019.
