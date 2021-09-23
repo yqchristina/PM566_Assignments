@@ -19,7 +19,7 @@ library(tidyverse)
 
 if (!file.exists("../2004_data"))
   download.file(
-    url = "https://www3.epa.gov/cgi-bin/broker?_service=data&_server=134.67.99.91&_port=4090&_sessionid=sKkgCqL/R52&_PROGRAM=dataprog.ad_viz_plotval_getdata.sas",
+    url = "https://www3.epa.gov/cgi-bin/broker?_service=data&_server=134.67.99.91&_port=4090&_sessionid=7BDG2Jm/R52&_PROGRAM=dataprog.ad_viz_plotval_getdata.sas",
     destfile = "2004_data",
     method   = "libcurl",
     timeout  = 60
@@ -29,7 +29,7 @@ pm2004 <- data.table::fread("2004_data")
 
 if (!file.exists("../2019_data"))
   download.file(
-    url = "https://www3.epa.gov/cgi-bin/broker?_service=data&_server=134.67.99.91&_port=4090&_sessionid=epxagqL/R52&_PROGRAM=dataprog.ad_viz_plotval_getdata.sas",
+    url = "https://www3.epa.gov/cgi-bin/broker?_service=data&_server=134.67.99.91&_port=4077&_sessionid=xPDTDJm/R52&_PROGRAM=dataprog.ad_viz_plotval_getdata.sas",
     destfile = "2019_data",
     method   = "libcurl",
     timeout  = 60
@@ -81,7 +81,7 @@ In 2004, there were 19233 observations total. In 2019, there were 53086 observat
 
 
 
-#Step 2: Combining the two data sets into one data frame
+# Step 2: Combining the two data sets into one data frame
 
 ```{r}
 library(dplyr)
@@ -100,7 +100,7 @@ str(pm)
 
 
 
-#Step 3: Create a basic map in leaflet() that shows the locations of the sites
+# Step 3: Create a basic map in leaflet() that shows the locations of the sites
 
 ```{r}
 
@@ -125,7 +125,7 @@ Observations: The sites in 2004 were mainly at the north and south ends of Calif
 
 
 
-#Step 4: Check for any missing or implausible values of PM in the combined dataset
+# Step 4: Check for any missing or implausible values of PM in the combined dataset
 
 ```{r}
 summary(pm)
@@ -159,7 +159,7 @@ Observations: There is 1 negative PM2.5 value recorded in 2004 and 282 of such v
 
 
 
-#Step 5: Explore the main question of interest at three different spatial levels
+# Step 5: Explore the main question of interest at three different spatial levels
 
 Comparing PM2.5 levels between 2004 and 2019 at the state level
 
