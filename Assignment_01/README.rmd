@@ -2,7 +2,9 @@
 title: "Assignment 1"
 author: "Christina Lin"
 date: "9/17/2021"
-output: github_document
+output: 
+- github_document
+- html_document
 always_allow_html: true
 ---
 
@@ -17,24 +19,24 @@ Reading 2004 and 2019 Data
 library(data.table)
 library(tidyverse)
 
-if (!file.exists("../2004_data"))
+if (!file.exists("2004_data.csv"))
   download.file(
-    url = "https://www3.epa.gov/cgi-bin/broker?_service=data&_server=134.67.99.91&_port=4090&_sessionid=7BDG2Jm/R52&_PROGRAM=dataprog.ad_viz_plotval_getdata.sas",
-    destfile = "2004_data",
+    url = "https://www3.epa.gov/cgi-bin/broker?_service=data&_server=134.67.99.91&_port=4075&_sessionid=etmkhIr/R52&_PROGRAM=dataprog.ad_viz_plotval_getdata.sas",
+    destfile = "2004_data.csv",
     method   = "libcurl",
     timeout  = 60
     )
-pm2004 <- data.table::fread("2004_data")
+pm2004 <- data.table::fread("2004_data.csv")
 
 
-if (!file.exists("../2019_data"))
+if (!file.exists("2019_data.csv"))
   download.file(
-    url = "https://www3.epa.gov/cgi-bin/broker?_service=data&_server=134.67.99.91&_port=4077&_sessionid=xPDTDJm/R52&_PROGRAM=dataprog.ad_viz_plotval_getdata.sas",
-    destfile = "2019_data",
+    url = "https://www3.epa.gov/cgi-bin/broker?_service=data&_server=134.67.99.91&_port=4075&_sessionid=uJZrnIr/R52&_PROGRAM=dataprog.ad_viz_plotval_getdata.sas",
+    destfile = "2019_data.csv",
     method   = "libcurl",
     timeout  = 60
     )
-pm2019 <- data.table::fread("2019_data")
+pm2019 <- data.table::fread("2019_data.csv")
 
 ```
 
@@ -103,7 +105,6 @@ str(pm)
 # Step 3: Create a basic map in leaflet() that shows the locations of the sites
 
 ```{r}
-
 library(leaflet)
 
 pal <- colorFactor(palette=c('red','blue'), domain=pm$year)
