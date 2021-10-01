@@ -1,0 +1,59 @@
+---
+title: "Assignment 2"
+author: "Christina Lin"
+date: "10/1/2021"
+output: github_document
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(data.table)
+library(tidyverse)
+
+if (!file.exists("individual.csv"))
+  download.file(
+    url = "https://raw.githubusercontent.com/USCbiostats/data-science-data/master/01_chs/chs_individual.csv",
+    destfile = "individual.csv",
+    method   = "libcurl",
+    timeout  = 60
+    )
+individual <- read.csv("individual.csv")
+
+
+if (!file.exists("regional.csv"))
+  download.file(
+    url = "https://raw.githubusercontent.com/USCbiostats/data-science-data/master/01_chs/chs_regional.csv",
+    destfile = "regional.csv",
+    method   = "libcurl",
+    timeout  = 60
+    )
+regional <- read.csv("regional.csv")
+
+```
+
+Merging the data sets
+
+```{r}
+merged <- merge(
+  x = individual,
+  y = regional,
+  all.x = TRUE, all.y = FALSE,
+  by.x = "townname", by.y = "townname"
+)
+
+```
+
+
+Checking dimensions to see if merge was successful
+```{r}
+dim(individual)
+dim(regional)
+dim(merged)
+```
+
+There are `r nrow(individual)` rows in the individual data set and `r nrow(regional)` rows in the regional data set. After merging, the new data set has `r nrow(merged)` rows, indicating a successful merge. 
