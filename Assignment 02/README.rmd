@@ -22,7 +22,7 @@ if (!file.exists("individual.csv"))
     method   = "libcurl",
     timeout  = 60
     )
-individual <- read.csv("individual.csv")
+individual <- fread("individual.csv")
 
 
 if (!file.exists("regional.csv"))
@@ -32,7 +32,7 @@ if (!file.exists("regional.csv"))
     method   = "libcurl",
     timeout  = 60
     )
-regional <- read.csv("regional.csv")
+regional <- fread("regional.csv")
 
 ```
 
@@ -57,3 +57,42 @@ dim(merged)
 ```
 
 There are `r nrow(individual)` rows in the individual data set and `r nrow(regional)` rows in the regional data set. After merging, the new data set has `r nrow(merged)` rows, indicating a successful merge. 
+
+
+
+
+Imputing missing values of important variables with averages within "male" and "hispanic"
+
+```{r}
+bmi_avg <- mean(merged[male==1 & hispanic==1, bmi], na.rm = TRUE)
+fev_avg <- mean(merged[male==1 & hispanic==1, fev], na.rm = TRUE)
+
+
+merged[is.na(bmi), bmi := bmi_avg]
+merged[is.na(fev), fev := fev_avg]
+
+head(merged)
+
+```
+
+
+
+Creating BMI categorical variable
+
+```{r}
+merged[bmi < 14, obesity_level := "underweight"]
+merged[bmi >= 14 & bmi < 21, obesity_level := "normal"]
+merged[bmi >= 21 & bmi < 24, obesity_level := "overweight"]
+merged[bmi > 24, obesity_level := "obese"]
+
+tab <- merged[, .(
+  N_Entries = .N,
+  min_BMI = min(bmi),
+  max_BMI = max(bmi)
+), by = obesity_level]
+
+knitr::kable(tab)
+```
+
+
+
