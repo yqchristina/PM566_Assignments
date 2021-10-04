@@ -3,8 +3,9 @@ title: "Assignment 1"
 author: "Christina Lin"
 date: "9/17/2021"
 output: 
-- github_document
-- html_document
+  github_document:
+    html_preview: false
+  html_document: default
 always_allow_html: true
 ---
 
@@ -104,7 +105,7 @@ str(pm)
 
 # Step 3: Create a basic map in leaflet() that shows the locations of the sites
 
-```{r}
+```{r eval = knitr::is_html_output(excludes = "gfm")}
 library(leaflet)
 
 pal <- colorFactor(palette=c('red','blue'), domain=pm$year)
