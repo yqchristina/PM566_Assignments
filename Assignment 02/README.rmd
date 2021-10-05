@@ -147,3 +147,51 @@ tab_exposure <- merged[, .(
 knitr::kable(tab_exposure)
 ```
 
+
+## Looking at the Data
+
+1. Facet plot showing scatterplots with regression lines of BMI vs FEV by “townname”.
+
+```{r}
+ggplot(merged, mapping = aes(x = bmi, y = fev)) +
+  geom_point()+
+  geom_smooth(method = lm, se = FALSE)+
+  facet_wrap(~townname)
+```
+
+Observations: In most of the towns, there appears to be a positive correlation between FEV and BMI. Towns that show little association are Riverside and Alpine. 
+
+
+
+2. Stacked histograms of FEV by BMI category and FEV by smoke/gas exposure. Use different color schemes than the ggplot default.
+```{r}
+color_pal <- c("pink","violet", "darkviolet", "hot pink")
+
+ggplot(merged, mapping = aes(x=fev, fill = obesity_level)) +
+  geom_histogram(col = "black", bins = 20) +
+  scale_fill_manual(values = color_pal)
+
+
+ggplot(merged, mapping = aes(x=fev, fill = smoke_gas_exposure)) +
+  geom_histogram(col = "black", bins = 20) +
+  scale_fill_brewer(palette = "Greens")
+
+```
+
+Observations: From the FEV-BMI histogram, it appears that there are more observations of higher FEV in the overweight and obese categories. There are also more observations of lower FEV in underweight and normal categories. This supports the trend seen in the scatterplots above with positive correlation between FEV and BMI. From the FEV-Smoke/Gas Exposure histogram, it appears that there are more observations of lower FEV with gas exposure. The trend between FEV and smoke exposure is difficult to tell from the histogram.
+
+
+
+3. Bar chart of BMI by smoke/gas exposure.
+
+
+4. Statistical summary graphs of FEV by BMI and FEV by smoke/gas exposure category.
+
+
+5. A leaflet map showing the concentrations of PM2.5 mass in each of the CHS communities.
+
+
+
+6. Choose a visualization to examine whether PM2.5 mass is associated with FEV.
+
+
