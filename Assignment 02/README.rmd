@@ -184,14 +184,59 @@ Observations: From the FEV-BMI histogram, it appears that there are more observa
 
 3. Bar chart of BMI by smoke/gas exposure.
 
+```{r}
+ggplot(merged, mapping = aes(x = smoke_gas_exposure, y = bmi)) +
+  geom_bar(stat= "summary")
+
+```
+
+Observations: This graph indicates little difference in bmi between the different smoke and gas exposure groups.  
+
+
 
 4. Statistical summary graphs of FEV by BMI and FEV by smoke/gas exposure category.
 
+```{r}
+ggplot(merged, mapping = aes(x = smoke_gas_exposure, y = fev)) +
+  geom_boxplot()
+
+ggplot(merged, mapping = aes(x = smoke_gas_exposure, y = bmi)) +
+  geom_boxplot()
+
+```
+
+Observations: The bar plots indicate that the median and quartile values are rather similar between the different smoke and gas exposure groups in terms of fev and bmi. The median bmi is slightly higher in the only smoke exposure group. 
+
+
 
 5. A leaflet map showing the concentrations of PM2.5 mass in each of the CHS communities.
+
+```{r eval = knitr::is_html_output(excludes = "gfm")}
+library(leaflet)
+
+pal <- colorNumeric(palette="viridis", domain=merged$pm25_mass)
+
+leaflet(merged) %>%
+  addProviderTiles('CartoDB.Positron') %>%
+  addCircles(
+    lat = ~lat, lng=~lon,
+    color = ~pal(pm25_mass),
+    opacity = 1, fillOpacity = 1, radius = 500
+    ) %>%
+  addLegend('bottomleft', pal=pal, values=merged$pm25_mass,
+          title='PM2.5 Mass', opacity=1)
+
+
+```
+
+Observations: The highest PM2.5 mass is found in communities around Riverside, Long Beach, and San Bernardino. 
+
 
 
 
 6. Choose a visualization to examine whether PM2.5 mass is associated with FEV.
 
+```{r}
+
+```
 
