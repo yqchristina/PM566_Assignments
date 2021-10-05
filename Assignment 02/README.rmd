@@ -2,7 +2,10 @@
 title: "Assignment 2"
 author: "Christina Lin"
 date: "10/1/2021"
-output: github_document
+output: 
+  github_document:
+    html_preview: false
+  html_document: default
 always_allow_html: true
 ---
 
@@ -36,9 +39,9 @@ regional <- fread("regional.csv")
 
 ```
 
-## Data Wrangling
+# Data Wrangling
 
-# Question 1: Merging the data sets
+## Question 1: Merging the data sets
 
 ```{r}
 merged <- merge(
@@ -84,7 +87,7 @@ head(merged)
 ```
 
 
-# Question 2: Creating BMI categorical variable and summary table
+## Question 2: Creating BMI categorical variable and summary table
 
 ```{r}
 merged[bmi < 14, obesity_level := "underweight"]
@@ -102,7 +105,7 @@ knitr::kable(tab)
 ```
 
 
-# Question 3: Creating Smoke and Gas Exposure categorical variable 
+## Question 3: Creating Smoke and Gas Exposure categorical variable 
 
 ```{r}
 merged[smoke == 0 & gasstove == 0, smoke_gas_exposure := "none"]
@@ -114,43 +117,43 @@ merged[smoke == 1 & gasstove == 1, smoke_gas_exposure := "both"]
 
 
 
-# Question 4: Summary of FEV and Asthma indicator by town, sex, obesity level, and exposure
+## Question 4: Summary of FEV and Asthma indicator by town, sex, obesity level, and exposure
 
 ```{r}
 tab_town <- merged[, .(
   avg_fev = mean(fev),
   sd_fev = sd(fev),
-  asthma_proportion = mean(asthma, na.rm = TRUE),
-  asthma_sd = sd(asthma, na.rm = TRUE)), by = townname]
+  asthma_proportion = mean(asthma),
+  asthma_sd = sd(asthma)), by = townname]
 knitr::kable(tab_town)
 
 
 tab_sex <- merged[, .(
   avg_fev = mean(fev),
   sd_fev = sd(fev),
-  asthma_proportion = mean(asthma, na.rm = TRUE),
-  asthma_sd = sd(asthma, na.rm = TRUE)), by = male]
+  asthma_proportion = mean(asthma),
+  asthma_sd = sd(asthma)), by = male]
 knitr::kable(tab_sex)
 
 tab_obesity <- merged[, .(
   avg_fev = mean(fev),
   sd_fev = sd(fev),
-  asthma_proportion = mean(asthma, na.rm = TRUE),
-  asthma_sd = sd(asthma, na.rm = TRUE)), by = obesity_level]
+  asthma_proportion = mean(asthma),
+  asthma_sd = sd(asthma)), by = obesity_level]
 knitr::kable(tab_obesity)
 
 tab_exposure <- merged[, .(
   avg_fev = mean(fev),
   sd_fev = sd(fev),
-  asthma_proportion = mean(asthma, na.rm = TRUE),
-  asthma_sd = sd(asthma, na.rm = TRUE)), by = smoke_gas_exposure]
+  asthma_proportion = mean(asthma),
+  asthma_sd = sd(asthma)), by = smoke_gas_exposure]
 knitr::kable(tab_exposure)
 ```
 
 
-## Looking at the Data
+# Looking at the Data
 
-1. Facet plot showing scatterplots with regression lines of BMI vs FEV by “townname”.
+## 1. Facet plot showing scatterplots with regression lines of BMI vs FEV by “townname”.
 
 ```{r}
 ggplot(merged, mapping = aes(x = bmi, y = fev)) +
@@ -163,7 +166,8 @@ Observations: In most of the towns, there appears to be a positive correlation b
 
 
 
-2. Stacked histograms of FEV by BMI category and FEV by smoke/gas exposure. Use different color schemes than the ggplot default.
+## 2. Stacked histograms of FEV by BMI category and FEV by smoke/gas exposure. Use different color schemes than the ggplot default.
+
 ```{r}
 color_pal <- c("pink","violet", "darkviolet", "hot pink")
 
@@ -182,7 +186,7 @@ Observations: From the FEV-BMI histogram, it appears that there are more observa
 
 
 
-3. Bar chart of BMI by smoke/gas exposure.
+## 3. Bar chart of BMI by smoke/gas exposure.
 
 ```{r}
 ggplot(merged, mapping = aes(x = smoke_gas_exposure, y = bmi)) +
@@ -194,7 +198,7 @@ Observations: This graph indicates little difference in bmi between the differen
 
 
 
-4. Statistical summary graphs of FEV by BMI and FEV by smoke/gas exposure category.
+## 4. Statistical summary graphs of FEV by BMI and FEV by smoke/gas exposure category.
 
 ```{r}
 ggplot(merged, mapping = aes(x = smoke_gas_exposure, y = fev)) +
@@ -209,7 +213,7 @@ Observations: The bar plots indicate that the median and quartile values are rat
 
 
 
-5. A leaflet map showing the concentrations of PM2.5 mass in each of the CHS communities.
+## 5. A leaflet map showing the concentrations of PM2.5 mass in each of the CHS communities.
 
 ```{r eval = knitr::is_html_output(excludes = "gfm")}
 library(leaflet)
@@ -234,9 +238,18 @@ Observations: The highest PM2.5 mass is found in communities around Riverside, L
 
 
 
-6. Choose a visualization to examine whether PM2.5 mass is associated with FEV.
+## 6. Choose a visualization to examine whether PM2.5 mass is associated with FEV.
 
 ```{r}
-
+ggplot(merged, mapping = aes(x = pm25_mass, y = fev)) +
+  geom_point()+
+  geom_smooth(method = lm, se = FALSE)+
+  geom_jitter()
 ```
 
+Observations: There may be a trend towards a negative association between fev and pm25_mass, but it is not obvious and is likely not a significant association. 
+
+
+
+## Conclusions
+There is a positive association between BMI and FEV. However, there are no obvious associations between FEV and smoke/gas exposure as well as FEV and PM2.5 exposure. 
