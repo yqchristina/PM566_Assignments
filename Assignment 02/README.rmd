@@ -36,7 +36,9 @@ regional <- fread("regional.csv")
 
 ```
 
-Merging the data sets
+## Data Wrangling
+
+# Question 1: Merging the data sets
 
 ```{r}
 merged <- merge(
@@ -66,18 +68,23 @@ Imputing missing values of important variables with averages within "male" and "
 ```{r}
 bmi_avg <- mean(merged[male==1 & hispanic==1, bmi], na.rm = TRUE)
 fev_avg <- mean(merged[male==1 & hispanic==1, fev], na.rm = TRUE)
+asthma_avg <- mean(merged[male==1 & hispanic==1, asthma], na.rm = TRUE)
+gasstove_avg <- mean(merged[male==1 & hispanic==1, gasstove], na.rm = TRUE)
+smoke_avg <- mean(merged[male==1 & hispanic==1, smoke], na.rm = TRUE)
 
 
 merged[is.na(bmi), bmi := bmi_avg]
 merged[is.na(fev), fev := fev_avg]
+merged[is.na(asthma), asthma := asthma_avg]
+merged[is.na(gasstove), gasstove := gasstove_avg]
+merged[is.na(smoke), smoke := smoke_avg]
 
 head(merged)
 
 ```
 
 
-
-Creating BMI categorical variable
+# Question 2: Creating BMI categorical variable and summary table
 
 ```{r}
 merged[bmi < 14, obesity_level := "underweight"]
@@ -95,4 +102,48 @@ knitr::kable(tab)
 ```
 
 
+# Question 3: Creating Smoke and Gas Exposure categorical variable 
+
+```{r}
+merged[smoke == 0 & gasstove == 0, smoke_gas_exposure := "none"]
+merged[smoke == 0 & gasstove == 1, smoke_gas_exposure := "only gas"]
+merged[smoke == 1 & gasstove == 0, smoke_gas_exposure := "only smoke"]
+merged[smoke == 1 & gasstove == 1, smoke_gas_exposure := "both"]
+
+```
+
+
+
+# Question 4: Summary of FEV and Asthma indicator by town, sex, obesity level, and exposure
+
+```{r}
+tab_town <- merged[, .(
+  avg_fev = mean(fev),
+  sd_fev = sd(fev),
+  asthma_proportion = mean(asthma, na.rm = TRUE),
+  asthma_sd = sd(asthma, na.rm = TRUE)), by = townname]
+knitr::kable(tab_town)
+
+
+tab_sex <- merged[, .(
+  avg_fev = mean(fev),
+  sd_fev = sd(fev),
+  asthma_proportion = mean(asthma, na.rm = TRUE),
+  asthma_sd = sd(asthma, na.rm = TRUE)), by = male]
+knitr::kable(tab_sex)
+
+tab_obesity <- merged[, .(
+  avg_fev = mean(fev),
+  sd_fev = sd(fev),
+  asthma_proportion = mean(asthma, na.rm = TRUE),
+  asthma_sd = sd(asthma, na.rm = TRUE)), by = obesity_level]
+knitr::kable(tab_obesity)
+
+tab_exposure <- merged[, .(
+  avg_fev = mean(fev),
+  sd_fev = sd(fev),
+  asthma_proportion = mean(asthma, na.rm = TRUE),
+  asthma_sd = sd(asthma, na.rm = TRUE)), by = smoke_gas_exposure]
+knitr::kable(tab_exposure)
+```
 
