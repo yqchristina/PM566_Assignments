@@ -158,7 +158,9 @@ knitr::kable(tab_exposure)
 ```{r}
 ggplot(merged, mapping = aes(x = bmi, y = fev)) +
   geom_point()+
-  geom_smooth(method = lm, se = FALSE)+
+  geom_smooth(method = lm, se = FALSE)+ 
+  ylab("Forced expiratory volume (ml)") + xlab("BMI") + 
+  ggtitle("Association Between FEV and BMI by CHS Community") +
   facet_wrap(~townname)
 ```
 
@@ -173,12 +175,15 @@ color_pal <- c("pink","violet", "darkviolet", "hot pink")
 
 ggplot(merged, mapping = aes(x=fev, fill = obesity_level)) +
   geom_histogram(col = "black", bins = 20) +
-  scale_fill_manual(values = color_pal)
+  scale_fill_manual(values = color_pal) +
+  xlab("Forced expiratory volume (ml)") + ylab("Frequency") +
+  ggtitle("Distribution of FEV at Different Obesity Levels") + labs(fill = "Obesity Level")
 
 
 ggplot(merged, mapping = aes(x=fev, fill = smoke_gas_exposure)) +
   geom_histogram(col = "black", bins = 20) +
-  scale_fill_brewer(palette = "Greens")
+  scale_fill_brewer(palette = "Greens") +xlab("Forced expiratory volume (ml)") + ylab("Frequency") +
+  ggtitle("Distribution of FEV in Different Smoke/Gas Exposure Groups") + labs(fill = "Smoke/Gas Exposure")
 
 ```
 
@@ -190,7 +195,9 @@ Observations: From the FEV-BMI histogram, it appears that there are more observa
 
 ```{r}
 ggplot(merged, mapping = aes(x = smoke_gas_exposure, y = bmi)) +
-  geom_bar(stat= "summary")
+  geom_bar(stat= "summary") +
+   xlab("Smoke/Gas Exposure") + ylab("BMI") +
+  ggtitle("Average BMI in Different Smoke/Gas Exposure Groups")
 
 ```
 
@@ -202,10 +209,14 @@ Observations: This graph indicates little difference in bmi between the differen
 
 ```{r}
 ggplot(merged, mapping = aes(x = smoke_gas_exposure, y = fev)) +
-  geom_boxplot()
+  geom_boxplot() +
+  xlab("Smoke/Gas Exposure") + ylab("Forced expiratory volume (ml)") +
+  ggtitle("Summary of FEV in Different Smoke/Gas Exposure Groups")
 
 ggplot(merged, mapping = aes(x = smoke_gas_exposure, y = bmi)) +
-  geom_boxplot()
+  geom_boxplot() +
+  xlab("Smoke/Gas Exposure") + ylab("BMI") +
+  ggtitle("Summary of BMI in Different Smoke/Gas Exposure Groups")
 
 ```
 
@@ -244,7 +255,9 @@ Observations: The highest PM2.5 mass is found in communities around Riverside, L
 ggplot(merged, mapping = aes(x = pm25_mass, y = fev)) +
   geom_point()+
   geom_smooth(method = lm, se = FALSE)+
-  geom_jitter()
+  geom_jitter() +
+  xlab("PM2.5 Mass") + ylab("Forced expiratory volume (ml)") +
+  ggtitle("Association between FEV and PM2.5 Mass")
 ```
 
 Observations: There may be a trend towards a negative association between fev and pm25_mass, but it is not obvious and is likely not a significant association. 

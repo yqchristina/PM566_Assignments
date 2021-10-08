@@ -276,7 +276,9 @@ knitr::kable(tab_exposure)
 ``` r
 ggplot(merged, mapping = aes(x = bmi, y = fev)) +
   geom_point()+
-  geom_smooth(method = lm, se = FALSE)+
+  geom_smooth(method = lm, se = FALSE)+ 
+  ylab("Forced expiratory volume (ml)") + xlab("BMI") + 
+  ggtitle("Association Between FEV and BMI by CHS Community") +
   facet_wrap(~townname)
 ```
 
@@ -295,7 +297,9 @@ color_pal <- c("pink","violet", "darkviolet", "hot pink")
 
 ggplot(merged, mapping = aes(x=fev, fill = obesity_level)) +
   geom_histogram(col = "black", bins = 20) +
-  scale_fill_manual(values = color_pal)
+  scale_fill_manual(values = color_pal) +
+  xlab("Forced expiratory volume (ml)") + ylab("Frequency") +
+  ggtitle("Distribution of FEV at Different Obesity Levels") + labs(fill = "Obesity Level")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
@@ -303,7 +307,8 @@ ggplot(merged, mapping = aes(x=fev, fill = obesity_level)) +
 ``` r
 ggplot(merged, mapping = aes(x=fev, fill = smoke_gas_exposure)) +
   geom_histogram(col = "black", bins = 20) +
-  scale_fill_brewer(palette = "Greens")
+  scale_fill_brewer(palette = "Greens") +xlab("Forced expiratory volume (ml)") + ylab("Frequency") +
+  ggtitle("Distribution of FEV in Different Smoke/Gas Exposure Groups") + labs(fill = "Smoke/Gas Exposure")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
@@ -321,7 +326,9 @@ difficult to tell from the histogram.
 
 ``` r
 ggplot(merged, mapping = aes(x = smoke_gas_exposure, y = bmi)) +
-  geom_bar(stat= "summary")
+  geom_bar(stat= "summary") +
+   xlab("Smoke/Gas Exposure") + ylab("BMI") +
+  ggtitle("Average BMI in Different Smoke/Gas Exposure Groups")
 ```
 
     ## No summary function supplied, defaulting to `mean_se()`
@@ -335,14 +342,18 @@ different smoke and gas exposure groups.
 
 ``` r
 ggplot(merged, mapping = aes(x = smoke_gas_exposure, y = fev)) +
-  geom_boxplot()
+  geom_boxplot() +
+  xlab("Smoke/Gas Exposure") + ylab("Forced expiratory volume (ml)") +
+  ggtitle("Summary of FEV in Different Smoke/Gas Exposure Groups")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 ggplot(merged, mapping = aes(x = smoke_gas_exposure, y = bmi)) +
-  geom_boxplot()
+  geom_boxplot() +
+  xlab("Smoke/Gas Exposure") + ylab("BMI") +
+  ggtitle("Summary of BMI in Different Smoke/Gas Exposure Groups")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-11-2.png)<!-- -->
@@ -379,7 +390,9 @@ Riverside, Long Beach, and San Bernardino.
 ggplot(merged, mapping = aes(x = pm25_mass, y = fev)) +
   geom_point()+
   geom_smooth(method = lm, se = FALSE)+
-  geom_jitter()
+  geom_jitter() +
+  xlab("PM2.5 Mass") + ylab("Forced expiratory volume (ml)") +
+  ggtitle("Association between FEV and PM2.5 Mass")
 ```
 
     ## `geom_smooth()` using formula 'y ~ x'
