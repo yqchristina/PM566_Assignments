@@ -1,0 +1,71 @@
+PM566_Midterm
+================
+Christina Lin
+10/17/2021
+
+# Exploring Cytochrome P450 Enzymes Found in the Human Brain
+
+## Introduction
+
+This project is based on my PhD thesis exploring the enzymes in the
+brain that can produce the neurosteroid pregnenolone from cholesterol.
+In classical steroid-producing organs such as the adrenals, pregnenolone
+is metabolized from cholesterol by the cytochrome P450 enzyme CYP11A1.
+However, CYP11A1 protein is difficult to detect in the brain and
+preliminary experiments have revealed that a potential alternate pathway
+not involving CYP11A1 is used by human brain cells to produce
+pregnenolone. Therefore, this project will analyze known cytochrome
+P450s in the UniProt database to answer 3 main questions: 1) Which
+cytochrome P450 enzymes are expressed in the brain? 2) Which cytochrome
+P450 enzymes are involved in cholesterol/steroid metabolism? 3) Which
+cytochrome P450 enzyme is similar to CYP11A1?
+
+## Methods
+
+List of cytochrome P450s were obtained from the UniProt database by
+searching “cytochrome P450”. Additional filters were applied: “Homo
+sapiens(human)” for species and “Reviewed” results to extract
+information only from manually annotated records from literature and
+curator-evaluated computational analysis. The columns of interest are
+protein name, gene name, length (of protein), mass, tissue specificity,
+cofactor, function, subcellular location, pathway, and sequence. The
+[results](https://www.uniprot.org/uniprot/?query=cytochrome%20p450&fil=organism%3A%22Homo%20sapiens%20(Human)%20%5B9606%5D%22%20AND%20reviewed%3Ayes&columns=id%2Centry%20name%2Cprotein%20names%2Cgenes%2Corganism%2Clength%2Cmass%2Ccomment(TISSUE%20SPECIFICITY)%2Ccomment(COFACTOR)%2Ccomment(FUNCTION)%2Ccomment(SUBCELLULAR%20LOCATION)%2Ccomment(PATHWAY)%2Csequence&sort=score)
+were downloaded as a CSV file.
+
+### Data Wrangling
+
+``` r
+cyp450 <- fread("UniProt_hCYP450s.csv")
+setnames(cyp450, "Gene names", "Gene_name")
+setnames(cyp450, "Protein names", "Protein_name")
+setnames(cyp450, "Function [CC]", "Function")
+setnames(cyp450, "Subcellular location [CC]", "Subcellular_location")
+setnames(cyp450, "Tissue specificity", "Tissue_expression")
+```
+
+Some enzymes have multiple gene names. For this analysis, only the first
+gene name containing “CYP” will be used. Rows that do not have a gene
+name starting with “CYP” are removed.
+
+``` r
+cyp450$Gene_name <- stringr::str_extract(cyp450$Gene_name, "CYP[[:alnum:]]+")
+start_rows <- nrow(cyp450)
+cyp450 <- cyp450[!is.na(cyp450$Gene_name),]
+end_rows <- nrow(cyp450)
+```
+
+The initial data table started with 82 proteins. After simplifying the
+gene names and removing entries that do not have “CYP” in the gene name,
+there are 62 proteins left.
+
+Next, the “Mass” column will be converted to a numeric variable by
+removing the “,” character and converting the values to integers.
+
+``` r
+cyp450$Mass <- stringr::str_remove_all(cyp450$Mass, ",")
+cyp450$Mass <- as.integer(cyp450$Mass)
+```
+
+## Preliminary Results
+
+## Conclusion
