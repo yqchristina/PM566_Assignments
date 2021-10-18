@@ -1,30 +1,33 @@
 ---
-title: "PM566_Project"
+title: "PM566_Midterm"
 author: "Christina Lin"
 date: "10/17/2021"
-output: html_document
+output:  
+  github_document: default
+  html_document:
+    html_preview: false
+  word_document: default
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidytext)
+
 ```
 
-## R Markdown
+# Exploring Cytochrome P450 Enzymes Found in the Human Brain
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Introduction
+This project is based on my PhD thesis exploring the enzymes in the brain that can produce the neurosteroid pregnenolone from cholesterol. In classical steroid-producing organs such as the adrenals, pregnenolone is metabolized from cholesterol by the cytochrome P450 enzyme CYP11A1. However, CYP11A1 protein is difficult to detect in the brain and preliminary experiments have revealed that a potential alternate pathway not involving CYP11A1 is used by human brain cells to produce pregnenolone. Therefore, this project will analyze known cytochrome P450s in the UniProt database to answer 3 main questions: 1) Which cytochrome P450 enzymes are expressed in the brain? 2) Which cytochrome P450 enzymes are involved in cholesterol/steroid metabolism? 3) Which cytochrome P450 enzyme is similar to CYP11A1? 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Methods
+List of cytochrome P450s were obtained from the UniProt database by searching "cytochrome P450". Additional filters were applied: "Homo sapiens(human)" for species and "Reviewed" results to extract information only from manually annotated records from literature and curator-evaluated computational analysis. The columns of interest are protein name, gene name, length (of protein), mass, tissue specificity, cofactor, function, subcellular location, and pathway. The results were downloaded as a CSV file. 
 
-```{r cars}
-summary(cars)
-```
 
-## Including Plots
+## Preliminary Results
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Conclusion
