@@ -15,10 +15,9 @@ CYP11A1. However, CYP11A1 protein is difficult to detect in the brain
 and preliminary experiments have revealed that a potential alternate
 pathway not involving CYP11A1 is used by human brain cells to produce
 pregnenolone. Therefore, this project will analyze known CYP450s in the
-UniProt database to answer 3 main questions: 1) Which CYP450 enzymes are
+UniProt database to answer 2 main questions: 1) Which CYP450 enzymes are
 expressed in the brain? 2) Which CYP450 enzymes are involved in
-cholesterol/steroid metabolism? 3) Which CYP450 enzyme is similar to
-CYP11A1?
+cholesterol/steroid metabolism?
 
 ## Methods
 
@@ -91,6 +90,28 @@ smallest <- cyp450[which.min(Mass),]
 largest <- cyp450[which.max(Mass),]
 ```
 
+To look for CYP450s that are expressed in the brains, terms such as
+“brain”, “cerebellum”, “cerebral”,and “hippocampus” (i.e. common
+references to different parts of the brain) will be used to filter the
+observations. For easier search for key terms in later analysis, data
+within Tissue_expression, Function, Subcellular_location, and Pathway
+columns will all be converted to lower case.
+
+``` r
+cyp450 <- cyp450[, Tissue_expression := str_to_lower(Tissue_expression)]
+cyp450 <- cyp450[, Function := str_to_lower(Function)]
+cyp450 <- cyp450[, Subcellular_location := str_to_lower(Subcellular_location)]
+cyp450 <- cyp450[, Pathway := str_to_lower(Pathway)]
+
+
+brain_cyp450 <- cyp450[grep("brain|cerebellum|cerebral|hippocampus", cyp450$Tissue_expression),]
+brain_cyp450 <- brain_cyp450[, Brain := as.factor(1)]
+
+
+non_brain_cyp450 <- cyp450[!grep("brain|cerebellum|cerebral|hippocampus", cyp450$Tissue_expression),]
+non_brain_cyp450 <- non_brain_cyp450[, Brain := as.factor(0)]
+```
+
 ## Preliminary Results
 
 The average mass of cyptochrome P450 enzymes found in humans is 57816.35
@@ -107,6 +128,103 @@ ggplot(cyp450, mapping=aes(x = Mass, y = Length, color = Gene_name)) +
   ggtitle("Mass and length of human CYP450s")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+Figure 1: Correlation between mass and length of human CYP450s. As
+expected, there is a positive linear correlation between mass and length
+of CYP450 enzymes.
+
+Out of the 60 CYP450 enzymes in humans, there are 13 CYP450s that are
+expressed in the brain.
+
+``` r
+brain_summary <- brain_cyp450[,.(Gene_name, Protein_name, Length, Mass)]
+
+knitr::kable(brain_summary)
+```
+
+| Gene_name | Protein_name                                                                                                                                                                                                                                                                                                                                                                                                                  | Length |  Mass |
+|:----------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------:|------:|
+| CYP3A4    | Cytochrome P450 3A4 (EC 1.14.14.1) (1,4-cineole 2-exo-monooxygenase) (1,8-cineole 2-exo-monooxygenase) (EC 1.14.14.56) (Albendazole monooxygenase (sulfoxide-forming)) (EC 1.14.14.73) (Albendazole sulfoxidase) (CYPIIIA3) (CYPIIIA4) (Cholesterol 25-hydroxylase) (Cytochrome P450 3A3) (Cytochrome P450 HLp) (Cytochrome P450 NF-25) (Cytochrome P450-PCN1) (Nifedipine oxidase) (Quinine 3-monooxygenase) (EC 1.14.14.55) |    503 | 57343 |
+| CYP26B1   | Cytochrome P450 26B1 (EC 1.14.13.-) (Cytochrome P450 26A2) (Cytochrome P450 retinoic acid-inactivating 2) (Cytochrome P450RAI-2) (Retinoic acid-metabolizing cytochrome)                                                                                                                                                                                                                                                      |    512 | 57513 |
+| CYP26A1   | Cytochrome P450 26A1 (EC 1.14.13.-) (Cytochrome P450 retinoic acid-inactivating 1) (Cytochrome P450RAI) (hP450RAI) (Retinoic acid 4-hydroxylase) (Retinoic acid-metabolizing cytochrome)                                                                                                                                                                                                                                      |    497 | 56199 |
+| CYP19A1   | Aromatase (EC 1.14.14.14) (CYPXIX) (Cytochrome P-450AROM) (Cytochrome P450 19A1) (Estrogen synthase)                                                                                                                                                                                                                                                                                                                          |    503 | 57883 |
+| CYP27A1   | Sterol 26-hydroxylase, mitochondrial (EC 1.14.15.15) (5-beta-cholestane-3-alpha,7-alpha,12-alpha-triol 26-hydroxylase) (Cytochrome P-450C27/25) (Cytochrome P450 27) (Sterol 27-hydroxylase) (Vitamin D(3) 25-hydroxylase)                                                                                                                                                                                                    |    531 | 60235 |
+| CYP2D7    | Putative cytochrome P450 2D7 (EC 1.14.14.1)                                                                                                                                                                                                                                                                                                                                                                                   |    515 | 57489 |
+| CYP46A1   | Cholesterol 24-hydroxylase (CH24H) (EC 1.14.14.25) (Cholesterol 24-monooxygenase) (Cholesterol 24S-hydroxylase) (Cytochrome P450 46A1)                                                                                                                                                                                                                                                                                        |    500 | 56821 |
+| CYP2A13   | Cytochrome P450 2A13 (EC 1.14.14.1) (CYPIIA13)                                                                                                                                                                                                                                                                                                                                                                                |    494 | 56688 |
+| CYP1B1    | Cytochrome P450 1B1 (EC 1.14.14.1) (CYPIB1) (Hydroperoxy icosatetraenoate dehydratase) (EC 4.2.1.152)                                                                                                                                                                                                                                                                                                                         |    543 | 60846 |
+| CYP4X1    | Cytochrome P450 4X1 (EC 1.14.14.-) (CYPIVX1)                                                                                                                                                                                                                                                                                                                                                                                  |    509 | 58875 |
+| CYP2U1    | Cytochrome P450 2U1 (Long-chain fatty acid omega-monooxygenase) (EC 1.14.14.80)                                                                                                                                                                                                                                                                                                                                               |    544 | 61987 |
+| CYP7B1    | Cytochrome P450 7B1 (24-hydroxycholesterol 7-alpha-hydroxylase) (EC 1.14.14.26) (25/26-hydroxycholesterol 7-alpha-hydroxylase) (EC 1.14.14.29) (3-hydroxysteroid 7-alpha hydroxylase) (Oxysterol 7-alpha-hydroxylase)                                                                                                                                                                                                         |    506 | 58256 |
+| CYP4V2    | Cytochrome P450 4V2 (Docosahexaenoic acid omega-hydroxylase CYP4V2) (EC 1.14.14.79) (Long-chain fatty acid omega-monooxygenase) (EC 1.14.14.80)                                                                                                                                                                                                                                                                               |    525 | 60724 |
+
+Table 1: List of CYP450s expressed in the brain.
+
+``` r
+ggplot()+
+  geom_boxplot(brain_cyp450, mapping = aes(x = Brain, y = Mass), color = "red") +
+  geom_boxplot(non_brain_cyp450, mapping = aes(x = Brain, y = Mass), color = "blue") +
+  xlab("Expression in the Brain") + ylab("Mass (Dalton)")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
+t.test(brain_cyp450$Mass, non_brain_cyp450$Mass)
+```
+
+    ## 
+    ##  Welch Two Sample t-test
+    ## 
+    ## data:  brain_cyp450$Mass and non_brain_cyp450$Mass
+    ## t = 1, df = 47, p-value = 0.3
+    ## alternative hypothesis: true difference in means is not equal to 0
+    ## 95 percent confidence interval:
+    ##  -717 2533
+    ## sample estimates:
+    ## mean of x mean of y 
+    ##     58528     57620
+
+Figure 2: Box plots for masses of CYP450s expressed in the brain (red)
+vs those that are not (blue). Distribution of the CYP450 masses are
+similar between the two groups, with slightly more variation in the
+non-brain CYP450 group. However, a t-test revealed no significant
+differences between the average masses of brain CYP450s and non-brain
+CYP450s.
+
+``` r
+chol_function <- brain_cyp450[grep("cholesterol|steroid|hormone", brain_cyp450$Function),]
+chol_pathway <- brain_cyp450[grep("cholesterol|steroid|hormone", brain_cyp450$Pathway),]
+
+knitr::kable(chol_function$Gene_name, col.names = "Brain CYP450s with Cholesterol or Steroid Function")
+```
+
+| Brain CYP450s with Cholesterol or Steroid Function |
+|:---------------------------------------------------|
+| CYP3A4                                             |
+| CYP19A1                                            |
+| CYP27A1                                            |
+| CYP46A1                                            |
+| CYP1B1                                             |
+| CYP4X1                                             |
+| CYP7B1                                             |
+
+``` r
+knitr::kable(chol_pathway$Gene_name, col.names = "Brain CYP450s in Cholesterol or Steroid Pathways")
+```
+
+| Brain CYP450s in Cholesterol or Steroid Pathways |
+|:-------------------------------------------------|
+| CYP3A4                                           |
+| CYP19A1                                          |
+| CYP27A1                                          |
+| CYP46A1                                          |
+| CYP1B1                                           |
+| CYP7B1                                           |
+
+Where are these brain CYP450s localized
+
+Function in steroid/cholesterol
 
 ## Conclusion
