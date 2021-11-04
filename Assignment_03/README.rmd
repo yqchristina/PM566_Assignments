@@ -18,6 +18,8 @@ library(tidytext)
 library(xml2)
 library(httr)
 library(stringr)
+library(dplyr)
+library(ggplot2)
 ```
 
 # Part 1: APIs
@@ -141,8 +143,132 @@ database <- data.frame(
   Date = dates,
   Abstracts = abstracts
 )
-knitr::kable(database[1:20,], caption = "First 20 papers about sars-cov-2 trial vaccine")
+knitr::kable(database[1:5,], caption = "First 5 papers about sars-cov-2 trial vaccine")
 ```
+
+
 
 # Part 2: Text Mining
 
+Downloading the data:
+```{r}
+if (!file.exists("pubmed.csv"))
+  download.file(
+    url = "https://raw.githubusercontent.com/USCbiostats/data-science-data/master/03_pubmed/pubmed.csv",
+    destfile = "pubmed.csv",
+    method   = "libcurl",
+    timeout  = 60
+    )
+pubmed <- data.table::fread("pubmed.csv")
+
+```
+
+
+## Question 1: Tokenizing the abstracts
+
+```{r}
+pubmed %>%
+  unnest_tokens(output = token,input = abstract) %>%
+  count(token, sort = TRUE) %>%
+  top_n(20,n) %>%
+  knitr::kable()
+```
+
+The most frequent words are stop words in this dataset, but words like "covid", "patients", and "cancer" are also very common. 
+
+
+Now removing the stop words:
+```{r}
+pubmed %>%
+  unnest_tokens(output = token,input = abstract) %>%
+  count(token, sort = TRUE) %>%
+  anti_join(stop_words, by = c("token" = "word")) %>%
+  top_n(20,n) %>%
+  knitr::kable()
+```
+
+After removing the stop words, the most common words are those related to the search terms, as expected.  We also observe "pregnancy" and "women" as common words, as well as other medical terms such as "treatment", "diagnosis", and "clinical". 
+
+
+Now observing the 5 most common tokens for each search term after removing stop words:
+
+```{r}
+pubmed[term=="covid"] %>%
+  unnest_tokens(output = token,input = abstract) %>%
+  count(token, sort = TRUE) %>%
+  anti_join(stop_words, by = c("token" = "word")) %>%
+  top_n(5,n) %>%
+  knitr::kable(caption = "5 Most Frequent Tokens in Abstracts with Search Term 'covid'")
+```
+
+
+```{r}
+pubmed[term=="cystic fibrosis",] %>%
+  unnest_tokens(output = token,input = abstract) %>%
+  count(token, sort = TRUE) %>%
+  anti_join(stop_words, by = c("token" = "word")) %>%
+  top_n(5,n) %>%
+  knitr::kable(caption = "5 Most Frequent Tokens in Abstracts with Search Term 'cystic fibrosis'")
+```
+
+
+```{r}
+pubmed[term=="meningitis",] %>%
+  unnest_tokens(output = token,input = abstract) %>%
+  count(token, sort = TRUE) %>%
+  anti_join(stop_words, by = c("token" = "word")) %>%
+  top_n(5,n) %>%
+  knitr::kable(caption = "5 Most Frequent Tokens in Abstracts with Search Term 'meningitis'")
+```
+
+
+```{r}
+pubmed[term=="preeclampsia",] %>%
+  unnest_tokens(output = token,input = abstract) %>%
+  count(token, sort = TRUE) %>%
+  anti_join(stop_words, by = c("token" = "word")) %>%
+  top_n(5,n) %>%
+  knitr::kable(caption = "5 Most Frequent Tokens in Abstracts with Search Term 'preeclampsia'")
+```
+
+
+```{r}
+pubmed[term=="prostate cancer",] %>%
+  unnest_tokens(output = token,input = abstract) %>%
+  count(token, sort = TRUE) %>%
+  anti_join(stop_words, by = c("token" = "word")) %>%
+  top_n(5,n) %>%
+  knitr::kable(caption = "5 Most Frequent Tokens in Abstracts with Search Term 'prostate cancer'")
+```
+
+
+## Question 2: Bi-grams
+
+```{r}
+pubmed %>%
+  unnest_ngrams(output = bigram,input = abstract, n = 2) %>%
+  count(bigram, sort = TRUE) %>%
+  top_n(10)%>%
+  ggplot(aes(n, fct_reorder(bigram,n))) + 
+  geom_col()
+```
+
+
+The most common bi-grams are related to the search terms, with covid 19 being the most frequent. 
+
+
+## Question 3: TF-IDF Values
+
+Calculating the TF-IDF values for each search term: 
+
+```{r}
+pubmed %>%
+  unnest_tokens(output = text, input = abstract) %>%
+  count(text, term) %>%
+  bind_tf_idf(text, term, n) %>%
+  arrange(desc(tf_idf)) %>% 
+  group_by(term) %>%
+  top_n(5,tf_idf) %>%
+  arrange(desc(term)) %>%
+  knitr::kable()
+```
