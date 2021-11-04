@@ -16,6 +16,8 @@ options(repos = c(CRAN = "http://cran.rstudio.com"))
 library(tidyverse)
 library(tidytext)
 library(xml2)
+library(httr)
+library(stringr)
 ```
 
 # Part 1: APIs
@@ -40,7 +42,6 @@ When searched on the PubMed website with the term "sars-cov-2 trial vaccine", th
 ## Using the NCBI API
 
 ```{r}
-library(httr)
 query_ids <- GET(
   url   = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
   query = list(
@@ -69,24 +70,79 @@ Now getting the details for the first 250 papers.
 ```{r}
 # Getting the abstract of the papers
 
-
 publications <- GET(
   url   = "https://eutils.ncbi.nlm.nih.gov/",
   path = "entrez/eutils/efetch.fcgi",
   query = list(
     db = "pubmed",
-    id = I(paste(ids, collapse=",")),
+    id = I(paste(ids[1:250], collapse=",")),
     retmax = "250",
     rettype = "abstract"
     )
 )
 
 # Turning the output into character vector
-publication <- httr::content(publications)
-publications_txt <- as.character(publication)
+publications <- httr::content(publications)
+publications_txt <- as.character(publications)
 
 ```
 
+
+Forming a database: 
+
+```{r}
+pub_char_list <- xml2::xml_children(publications)
+pub_char_list <- sapply(pub_char_list, as.character)
+```
+
+
+Getting the titles
+```{r}
+titles <- str_extract(pub_char_list, "<ArticleTitle>[[:print:][:space:]]+</ArticleTitle>")
+titles <- str_remove_all(titles, "</?[[:alnum:][:punct:]]+>")
+```
+
+
+Getting the journals
+```{r}
+journals <- str_extract(pub_char_list, "<Journal>[[:print:][:space:]]+</Journal>")
+journals <- str_extract(journals,"<Title>[[:print:][:space:]]+</Title>")
+journals <- str_remove_all(journals, "</?[[:alnum:][:punct:]]+>")
+
+```
+
+Getting the publication date
+
+```{r}
+dates <- str_extract(pub_char_list, "<PubDate>[[:print:][:space:]]+</PubDate>")
+dates <- str_replace_all(dates, "</Year>\\n", "-")
+dates <- str_replace_all(dates, "</Month>\\n", "-")
+dates <- str_replace_all(dates, "</Day>\\n", "")
+dates <- str_remove_all(dates, "</?[[:alnum:][:space:]]+>")
+dates <- str_remove_all(dates, "[:space:]+")
+```
+
+
+Getting the abstracts and cleaning them up
+```{r}
+abstracts <- str_extract(pub_char_list, "<Abstract>[[:print:][:space:]]+</Abstract>")
+abstracts <- str_remove_all(abstracts, "</?[[:alnum:][:punct:]]+>")
+abstracts <- str_replace_all(abstracts, "[[:space:]]+", " ")
+```
+
+
+Finally, the dataset
+
+```{r}
+database <- data.frame(
+  PubMedID = ids[1:250],
+  Title = titles,
+  Journal = journals,
+  Date = dates,
+  Abstracts = abstracts
+)
+knitr::kable(database[1:20,], caption = "First 20 papers about sars-cov-2 trial vaccine")
+```
 
 # Part 2: Text Mining
 
