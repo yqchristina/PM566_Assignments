@@ -41,7 +41,7 @@ counts <- as.integer(counts)
 When searched on the PubMed website with the term "sars-cov-2 trial vaccine", there are `r counts` results.
 
 
-## Using the NCBI API
+Using the NCBI API
 
 ```{r}
 query_ids <- GET(
@@ -85,7 +85,6 @@ publications <- GET(
 
 # Turning the output into character vector
 publications <- httr::content(publications)
-publications_txt <- as.character(publications)
 
 ```
 
@@ -202,6 +201,9 @@ pubmed[term=="covid"] %>%
 ```
 
 
+
+
+
 ```{r}
 pubmed[term=="cystic fibrosis",] %>%
   unnest_tokens(output = token,input = abstract) %>%
@@ -210,6 +212,9 @@ pubmed[term=="cystic fibrosis",] %>%
   top_n(5,n) %>%
   knitr::kable(caption = "5 Most Frequent Tokens in Abstracts with Search Term 'cystic fibrosis'")
 ```
+
+
+
 
 
 ```{r}
@@ -222,6 +227,9 @@ pubmed[term=="meningitis",] %>%
 ```
 
 
+
+
+
 ```{r}
 pubmed[term=="preeclampsia",] %>%
   unnest_tokens(output = token,input = abstract) %>%
@@ -230,6 +238,9 @@ pubmed[term=="preeclampsia",] %>%
   top_n(5,n) %>%
   knitr::kable(caption = "5 Most Frequent Tokens in Abstracts with Search Term 'preeclampsia'")
 ```
+
+
+
 
 
 ```{r}
@@ -272,3 +283,21 @@ pubmed %>%
   arrange(desc(term)) %>%
   knitr::kable()
 ```
+
+For the top TF-IDF words for the term "covid", the words "covid" and "pandemic" are also in the top 5 most frequent tokens. However, "coronavirus", "sars", and "cov" were not part of the top 5 most frequent tokens. 
+
+
+For the top TF-IDF words for the term "cystic fibrosis", the words "fibrosis", "cystic", and "cf" are also in the top 5 most frequent tokens. However, the words "cftr" and "sweat" were not part of the top 5 most frequent tokens.
+
+
+For the top TF-IDF words for the term "meningitis", the words "meningeal", "meningitis", and "csf" are also in the top 5 most frequent tokens. However, the words "meninges" and "pachymeningitis" were not part of the top 5 most frequent tokens.
+
+
+For the top TF-IDF words for the term "preeclampsia", the words "preeclampsia", "eclampsia", and "pregnancy" are also in the top 5 most frequent tokens. However, the words "maternal" and "gestation" were not part of the top 5 most frequent tokens.
+
+
+For the top TF-IDF words for the term "prostate cancer", the word "prostate" was in the top 5 most frequent tokens. However, "androgen", "psa", "castration" and "prostatectomy" were not part of the top 5 most frequent tokens. 
+
+
+Overall, searching words by the TF-IDF values appear to give more informative words related to the conditions of interest. 
+
